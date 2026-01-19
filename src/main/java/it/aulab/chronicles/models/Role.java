@@ -2,8 +2,6 @@ package it.aulab.chronicles.models;
 
 import java.util.List;
 
-import org.springframework.data.annotation.Id;
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
