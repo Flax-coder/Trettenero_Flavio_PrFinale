@@ -15,11 +15,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-
-
 
 
 @Controller
@@ -62,7 +58,11 @@ public class UserController {
             return "auth/register";
         }
 
-        return "redirect:/register?success";
+        userService.saveUser(userDto, redirectAttributes, request, response);
+
+        redirectAttributes.addFlashAttribute("successMessage", "Registrazione avvenuta!");
+
+        return "redirect:/";
     }
     
 }
