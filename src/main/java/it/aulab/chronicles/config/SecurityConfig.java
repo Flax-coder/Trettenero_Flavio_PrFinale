@@ -34,9 +34,12 @@ public class SecurityConfig {
                     .requestMatchers(
                         "/register/**",
                         "/register",
-                        "/login"
+                        "/login",
+                        "/",
+                        "/articles",
+                        "/images/**",
+                        "/articles/detail/**"
                     ).permitAll()
-
                     .anyRequest().authenticated()
             )
             .formLogin(form ->

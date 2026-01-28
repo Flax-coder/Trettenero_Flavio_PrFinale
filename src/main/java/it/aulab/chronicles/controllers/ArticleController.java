@@ -1,6 +1,9 @@
 package it.aulab.chronicles.controllers;
 
 import java.security.Principal;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -11,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import it.aulab.chronicles.dtos.ArticleDto;
 import it.aulab.chronicles.dtos.CategoryDto;
 import it.aulab.chronicles.models.Article;
 import it.aulab.chronicles.models.Category;
@@ -20,6 +24,7 @@ import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 
@@ -37,6 +42,18 @@ public class ArticleController {
     ArticleController(ArticleService articleService) {
         this.articleService = articleService;
     }
+
+    @GetMapping
+    public String articlesIndex(Model viewModel) {
+        viewModel.addAttribute("title", "Tutti gli articoli");
+
+        List<ArticleDto> articles = articleService.readAll();
+
+        Collections.sort(articles, Comparator.comparing(ArticleDto::getPublishDate).reversed());
+        viewModel.addAttribute("articles", articles);
+        return "article/articles";
+    }
+    
     
     @GetMapping("create")
     public String articleCreate(Model viewModel) {
@@ -70,6 +87,13 @@ public class ArticleController {
         redirectAttributes.addFlashAttribute("successMessage", "Articolo aggiornato con successo!");
         
         return "redirect:/";
+    }
+    
+    @GetMapping("detail/{id}")
+    public String detailArticle(@PathVariable("id") Long id, Model viewModel) {
+        viewModel.addAttribute("title", "Article detail");
+        viewModel.addAttribute("article", articleService.read(id));
+        return "article/detail";
     }
     
 }
