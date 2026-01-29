@@ -32,11 +32,6 @@ public class UserController {
 
     @Autowired
     private ArticleService articleService;
-
-    @GetMapping("/")
-    public String home() {
-        return "home";
-    }
     
     @GetMapping("/")
     public String home(Model viewModel) {
