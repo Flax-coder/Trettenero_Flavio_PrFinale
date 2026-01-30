@@ -31,6 +31,7 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests((authorize) ->
                 authorize
+                    .requestMatchers("/admin/dashboard", "/categories/create", "/categories/edit/{id}", "/categories/update/{id}", "/categories/delete/{id}").hasRole("ADMIN")
                     .requestMatchers(
                         "/register/**",
                         "/register",

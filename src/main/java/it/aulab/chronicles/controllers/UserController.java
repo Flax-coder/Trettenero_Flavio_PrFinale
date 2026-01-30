@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import it.aulab.chronicles.dtos.ArticleDto;
 import it.aulab.chronicles.dtos.UserDto;
 import it.aulab.chronicles.models.User;
+import it.aulab.chronicles.repositories.CareerRequestRepository;
 import it.aulab.chronicles.services.ArticleService;
+import it.aulab.chronicles.services.CategoryService;
 import it.aulab.chronicles.services.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -24,6 +26,8 @@ import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @Controller
 public class UserController {
@@ -32,6 +36,12 @@ public class UserController {
 
     @Autowired
     private ArticleService articleService;
+
+    @Autowired
+    private CareerRequestRepository careerRequestRepository;
+
+    @Autowired
+    private CategoryService categoryService;
     
     @GetMapping("/")
     public String home(Model viewModel) {
@@ -98,6 +108,14 @@ public class UserController {
         viewModel.addAttribute("articles", articles);
 
         return "article/articles";
+    }
+    
+    @GetMapping("/admin/dashboard")
+    public String adminDashboard(Model viewModel) {
+        viewModel.addAttribute("title", "Richieste ricevute");
+        viewModel.addAttribute("requests", careerRequestRepository.findByIsCheckedFalse());
+        viewModel.addAttribute("categories", categoryService.readAll());
+        return "admin/dashboard";
     }
     
 }
