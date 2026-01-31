@@ -91,15 +91,69 @@ public class ArticleService implements CrudService<ArticleDto, Article, Long> {
     }
 
     @Override
-    public ArticleDto update(Long key, Article model, MultipartFile file) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'update'");
+    public ArticleDto update(Long key, Article updatedArticle, MultipartFile file) {
+        String url = "";
+
+        if (articleRepository.existsById(key)) {
+
+            updatedArticle.setId(key);
+            Article article = articleRepository.findById(key).get();
+            updatedArticle.setUser(article.getUser());
+
+            if (!file.isEmpty()) {
+                try {
+                    imageService.deleteImage(article.getImage().getPath());
+                    try {
+                        CompletableFuture<String> futureUrl = imageService.saveImageOnCloud(file);
+                        url = futureUrl.get();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    imageService.saveImageOnDB(url, updatedArticle);
+                    updatedArticle.setIsAccepted(null);
+
+                    return modelMapper.map(articleRepository.save(updatedArticle), ArticleDto.class);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else if(article.getImage() == null) {
+                updatedArticle.setIsAccepted(article.getIsAccepted());
+            } else {
+                updatedArticle.setImage(article.getImage());
+                if (updatedArticle.equals(article) == false ) {
+                    updatedArticle.setIsAccepted(null);
+                } else {
+                    updatedArticle.setIsAccepted(article.getIsAccepted());
+                }
+                
+                return modelMapper.map(articleRepository.save(updatedArticle), ArticleDto.class);
+            }
+        } else {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+
+        return null;
     }
 
     @Override
     public void delete(Long key) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
+        if (articleRepository.existsById(key)) {
+            
+            Article article = articleRepository.findById(key).get();
+
+            try {
+                String path = article.getImage().getPath();
+                article.getImage().setArticle(null);
+                imageService.deleteImage(path);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            articleRepository.deleteById(key);
+
+        } else {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
     }
     
     public List<ArticleDto> searchByCategory(Category category) {
@@ -122,5 +176,13 @@ public class ArticleService implements CrudService<ArticleDto, Article, Long> {
         Article article = articleRepository.findById(id).get();
         article.setIsAccepted(result);
         articleRepository.save(article);
+    }
+
+    public List<ArticleDto> search(String keyword) {
+        List<ArticleDto> dtos = new ArrayList<ArticleDto>();
+        for (Article article : articleRepository.search(keyword)) {
+            dtos.add(modelMapper.map(article, ArticleDto.class));
+        }
+        return dtos;
     }
 }
