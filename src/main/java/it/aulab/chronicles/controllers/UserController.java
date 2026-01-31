@@ -1,10 +1,12 @@
 package it.aulab.chronicles.controllers;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,7 +17,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import it.aulab.chronicles.dtos.ArticleDto;
 import it.aulab.chronicles.dtos.UserDto;
+import it.aulab.chronicles.models.Article;
 import it.aulab.chronicles.models.User;
+import it.aulab.chronicles.repositories.ArticleRepository;
 import it.aulab.chronicles.repositories.CareerRequestRepository;
 import it.aulab.chronicles.services.ArticleService;
 import it.aulab.chronicles.services.CategoryService;
@@ -29,6 +33,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.bind.annotation.RequestParam;
 
 
+
 @Controller
 public class UserController {
     @Autowired
@@ -38,15 +43,24 @@ public class UserController {
     private ArticleService articleService;
 
     @Autowired
+    private ArticleRepository articleRepository;
+
+    @Autowired
     private CareerRequestRepository careerRequestRepository;
 
     @Autowired
     private CategoryService categoryService;
+
+    @Autowired
+    private ModelMapper modelMapper;
     
     @GetMapping("/")
     public String home(Model viewModel) {
 
-        List<ArticleDto> articles = articleService.readAll();
+        List<ArticleDto> articles = new ArrayList<ArticleDto>();
+        for (Article article : articleRepository.findByIsAcceptedTrue()) {
+            articles.add(modelMapper.map(article, ArticleDto.class));
+        }
 
         Collections.sort(
             articles,
@@ -105,7 +119,8 @@ public class UserController {
         viewModel.addAttribute("title", "Tutti gli articoli trovati per utente " + user.getUsername());
 
         List<ArticleDto> articles = articleService.searchByAuthor(user);
-        viewModel.addAttribute("articles", articles);
+        List<ArticleDto> acceptedArticles = articles.stream().filter(article -> Boolean.TRUE.equals(article.getIsAccepted())).collect(Collectors.toList());
+        viewModel.addAttribute("articles", acceptedArticles);
 
         return "article/articles";
     }
@@ -116,6 +131,13 @@ public class UserController {
         viewModel.addAttribute("requests", careerRequestRepository.findByIsCheckedFalse());
         viewModel.addAttribute("categories", categoryService.readAll());
         return "admin/dashboard";
+    }
+    
+    @GetMapping("/revisor/dashboard")
+    public String revisrDashboard(Model viewModel) {
+        viewModel.addAttribute("title", "Articoli da revisionare");
+        viewModel.addAttribute("articles", articleRepository.findByIsAcceptedNull());
+        return "revisor/dashboard";
     }
     
 }

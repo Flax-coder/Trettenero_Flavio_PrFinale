@@ -32,6 +32,7 @@ public class SecurityConfig {
             .authorizeHttpRequests((authorize) ->
                 authorize
                     .requestMatchers("/admin/dashboard", "/categories/create", "/categories/edit/{id}", "/categories/update/{id}", "/categories/delete/{id}").hasRole("ADMIN")
+                    .requestMatchers("/revisor/dashboard", "/revisor/detail/{id}", "/accept").hasRole("REVISOR")
                     .requestMatchers(
                         "/register/**",
                         "/register",
