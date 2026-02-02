@@ -63,7 +63,7 @@ public class ImageServiceImpl implements ImageService {
 
                 HttpHeaders headers = new HttpHeaders();
                 headers.set("Content-Type", "image/" + extension);
-                headers.set("Authorization", "Bearer" + supabaseKey);
+                headers.set("Authorization", "Bearer " + supabaseKey);
 
                 HttpEntity<byte[]> requestEntity = new HttpEntity<>(file.getBytes(), headers);
 
@@ -92,7 +92,7 @@ public class ImageServiceImpl implements ImageService {
         RestTemplate restTemplate = new RestTemplate();
 
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer" + supabaseKey);
+        headers.set("Authorization", "Bearer " + supabaseKey);
 
         HttpEntity<String> entity = new HttpEntity<>(headers);
 

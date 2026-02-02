@@ -1,0 +1,21 @@
+body {
+    background-color: rgb(238, 219, 219);
+    font-family: 'Lora', serif;
+    font-size: larger;
+}
+
+nav {
+    background-color: rgb(206, 188, 155);
+}
+
+footer {
+    background-color: rgb(165, 157, 145);
+}
+
+h1, h2, h3 {
+  font-family: 'Playfair Display', serif;
+}
+
+.card {
+    background-color: aliceblue;
+}

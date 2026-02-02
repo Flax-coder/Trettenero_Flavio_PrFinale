@@ -44,7 +44,10 @@ public class SecurityConfig {
                         "/articles/detail/**",
                         "/categories/search/{id}",
                         "/search/{id}",
-                        "/articles/search"
+                        "/articles/search",
+                        "/css/**",
+                        "/js/**",
+                        "/webjars/**"
                     ).permitAll()
                     .anyRequest().authenticated()
             )
