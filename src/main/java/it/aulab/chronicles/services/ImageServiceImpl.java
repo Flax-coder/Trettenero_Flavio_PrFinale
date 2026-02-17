@@ -22,22 +22,22 @@ import org.springframework.http.*;
 
 import jakarta.transaction.Transactional;
 
-@Service
+@org.springframework.context.annotation.Profile("supabase")
 public class ImageServiceImpl implements ImageService {
 
     @Autowired
     private ImageRepository imageRepository;
 
-    @Value("${supabase.url}")
+    @Value("${supabase.url:}")
     private String supabaseUrl;
 
-    @Value("${supabase.key}")
+    @Value("${supabase.key:}")
     private String supabaseKey;
 
-    @Value("${supabase.bucket}")
+    @Value("${supabase.bucket:}")
     private String supabaseBucket;
 
-    @Value("${supabase.image}")
+    @Value("${supabase.image:}")
     private String supabaseImage;
 
     private final RestTemplate restTemplate = new RestTemplate();
@@ -49,6 +49,11 @@ public class ImageServiceImpl implements ImageService {
 
     @Async
     public CompletableFuture<String> saveImageOnCloud(MultipartFile file) throws Exception {
+        if (supabaseUrl.isBlank() || supabaseKey.isBlank() || supabaseBucket.isBlank()) {
+            return CompletableFuture.failedFuture(
+                new IllegalStateException("Supabase non configurato: passa a MinIO o reimposta le properties.")
+            );
+        }
         if (!file.isEmpty()) {
             try {
                 String nameFile = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
@@ -84,7 +89,11 @@ public class ImageServiceImpl implements ImageService {
     @Async
     @Transactional
     public void deleteImage(String imagePath) throws IOException {
-        
+
+        if (supabaseKey.isBlank() || supabaseBucket.isBlank() || supabaseImage.isBlank()) {
+            throw new IllegalStateException("Supabase non configurato: impossibile cancellare da cloud.");
+        }
+
         String url = imagePath.replace(supabaseImage, supabaseBucket);
 
         imageRepository.deleteByPath(imagePath);
