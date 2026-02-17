@@ -28,6 +28,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
+            .cors(cors -> {})
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests((authorize) ->
                 authorize
@@ -49,13 +50,17 @@ public class SecurityConfig {
                         "/js/**",
                         "/webjars/**"
                     ).permitAll()
+                    .requestMatchers("/api/auth/me").permitAll()
+                    .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/articles/**").permitAll()
+                    .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/articles").hasRole("WRITER")
+                    .requestMatchers("/api/**").authenticated()
                     .anyRequest().authenticated()
             )
             .formLogin(form ->
                 form
                     .loginPage("/login")
                     .loginProcessingUrl("/login")
-                    .defaultSuccessUrl("/")
+                    .defaultSuccessUrl("/", true)
                     .permitAll()
             )
             .logout(logout ->

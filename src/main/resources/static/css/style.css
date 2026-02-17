@@ -1,21 +1,64 @@
+:root {
+
+    /*colors*/
+    --main: rgb(215, 224, 224);
+    --sec: rgb(211, 202, 202);
+    --acc: rgb(37, 59, 52);
+
+    /*fonts*/
+    --f: 'Lora', serif;
+    --f1: 'Playfair Display', serif;
+}
+
 body {
-    background-color: rgb(238, 219, 219);
-    font-family: 'Lora', serif;
+    color: var(--sec);
+    background-color: var(--main);
+    font-family: var(--f);
     font-size: larger;
 }
 
 nav {
-    background-color: rgb(158, 110, 19);
+    color: var(--sec);
+    background-color: var(--acc);
 }
 
 footer {
-    background-color: rgb(165, 157, 145);
+    background-color: var(--acc);
 }
 
-h1, h2, h3 {
-  font-family: 'Playfair Display', serif;
+h2, h3, h4, h5 {
+    color: var(--acc) !important;
+    font-family: var(--f1);
+}
+
+h1 {
+    color: var(--acc) !important;
+}
+
+a {
+    color: var(--sec) !important;
+}
+
+.dropdown-item {
+    color: var(--acc) !important;
+}
+
+p {
+    color: var(--sec);
+}
+
+label {
+    color: var(--acc);
+}
+
+span {
+    color: var(--acc) !important;
+}
+
+.brand {
+    color: var(--acc) !important;
 }
 
 .card {
-    background-color: aliceblue;
+    background-color: var(--acc);
 }

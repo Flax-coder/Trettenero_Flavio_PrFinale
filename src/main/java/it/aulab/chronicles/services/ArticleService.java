@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import it.aulab.chronicles.dtos.ArticleDto;
+import it.aulab.chronicles.dtos.api.ArticleApiDto;
 import it.aulab.chronicles.models.Article;
 import it.aulab.chronicles.models.Category;
 import it.aulab.chronicles.models.User;
@@ -184,5 +185,34 @@ public class ArticleService implements CrudService<ArticleDto, Article, Long> {
             dtos.add(modelMapper.map(article, ArticleDto.class));
         }
         return dtos;
+    }
+
+    private ArticleApiDto toApiDto(Article a) {
+        ArticleApiDto dto = new ArticleApiDto();
+        dto.setId(a.getId());
+        dto.setTitle(a.getTitle());
+        dto.setSubtitle(a.getSubtitle());
+        dto.setBody(a.getBody());
+        dto.setPublishDate(a.getPublishDate());
+        dto.setIsAccepted(a.getIsAccepted());
+
+        dto.setAuthorName(a.getUser() != null ? a.getUser().getUsername() : null);
+        dto.setCategoryName(a.getCategory() != null ? a.getCategory().getName() : null);
+        dto.setImageUrl(a.getImage() != null ? a.getImage().getPath() : null);
+
+        return dto;
+    }
+
+    public List<ArticleApiDto> readAllApi() {
+        return articleRepository.findAll()
+            .stream()
+            .map(this::toApiDto)
+            .toList();
+    }
+
+    public ArticleApiDto readApi(Long id) {
+        Article a = articleRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Article not found"));
+        return toApiDto(a);
     }
 }
